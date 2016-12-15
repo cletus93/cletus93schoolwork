@@ -1,0 +1,51 @@
+//This program is used as a user interface for a concert ticket sales station.
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Randall Rootz</title>
+		<style type = "text/css">
+			h2 {font-family: 'Times New Roman'; font-size: 20pt; font-weight: bold}
+			h3 {font-family: 'Times New Roman'; font-size: 16pt}
+			body {fond-family: 'Times New Roman'; font-size: 12pt}
+		</style>
+	</head>
+	<body>
+		<h2>Looking for Widget?</h2>
+		<h3>We have three different kinds in stock</h3>
+		<p>Model 37AX-L     price: $12.45 ea.</p>
+		<p>Model 42XR-J     price: $15.34 ea.</p>
+		<p>Model 93ZZ-A     price: $28.99 ea.</p>
+		<h3>Order below</h3>
+		<form action = "http://hoare.cs.umsl.edu/~w1-rootz/negcheck.php"
+			method = "post">
+			<p>
+				<label>
+					<input type = "text" name = "w1" />
+					Model 37AX-L(how many do you want)
+				</label>
+				<br /><br />
+
+				<label>
+					<input type = "text" name = "w2" />
+					Model 42XR-J(how many do you want)
+				</label>
+				<br /><br />
+
+				<label>
+					<input type = "text" name = "w3" />
+					Model 93ZZ-A(how many do you want)
+				</label>
+				<br /><br />
+	
+				<label>
+					<input type = "text" name = "state" />
+					What are the initials of the state you live in(ex. MO)
+				</label>
+				<br /><br />
+
+				<input type = "reset" value = "reset" />
+				<input type = "submit" value = "submit" />
+			</p>
+		</form>
+	</body>
+</html>

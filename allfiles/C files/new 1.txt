@@ -1,0 +1,34 @@
+//This program is designed to be a template of how to build a tree.
+#ifndef TREE_H
+#define TREE_H
+#include <stdio.h>
+
+void insert ( int num, struct treenode **sr, int levelcount)
+{
+	if ( *sr == '\0' )
+	{
+		*sr = (struct treenode*) malloc ( sizeof ( struct treenode ) );
+
+		( *sr ) -> left = 0;
+		( *sr ) -> data = num;
+		( *sr ) -> datacount = 1;
+		( *sr ) -> level = levelcount;
+		( *sr ) -> right = 0;
+	}
+	if (num == (*sr)->data)
+    {
+       ((*sr)->datacount)++;
+    }
+	if(num < (*sr)-> data)
+	{
+		levelcount++;
+		insert ( num, &( *sr )-> left, levelcount );
+	}
+	else if(num > (*sr)-> data)
+	{
+		levelcount++;
+		insert ( num, &( *sr )-> right, levelcount );
+	}
+}
+
+#endif

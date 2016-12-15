@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<!-- Randall Rootz, 31 August 2016
+  Simulate a game of random movement in a 10 by 10 grid.  This program will only run
+  until it reaches the top right position or does one million moves.  The only input for 
+  this program is the click of the run button, and it will display
+  how many moves it took to reach the end and the square that was visited the least and most.
+  This program tracks the progress of the movement with a visual aspect and displays the last
+  position of the function when it ends. My partner was Alex Wacker.
+-->
+<html>
+<body>
+
+<button onclick="Rerun()">Click here to start the game.</button>
+
+<h1>Random Movement Game</h1>
+
+<script>
+function Rerun()
+{
+   var runnum = 0, arrwidth = 0, arrheight = 0, maxsteps = 0, onegame;
+   var max=0;
+   var min=maxsteps;
+   
+   //prompt user for all number of times to play, with a selected grid and max number of steps
+   while(runnum == 0)
+   {
+      runnum = prompt("Please enter how many times you will want to run the game.","0");
+   }
+   while(arrwidth == 0)
+   {
+      arrwidth = prompt("Please enter the width of the grid.","0");
+   }
+   while(arrheight == 0)
+   {
+	  arrheight = prompt("Please enter the height of the grid.","0");
+   }
+   while(maxsteps < 1 || maxsteps > 1000000)
+   {
+      maxsteps = prompt("Please enter how many steps you would like to take.(0-1000000)","0");
+   }
+   for(var k = 0; k < runnum; k++)
+   {
+      onegame = Move(arrwidth, arrheight, maxsteps, min, max);
+	  min = onegame.min;
+	  max = onegame.max;
+	  document.getElementById("minCount").innerHTML = min;
+      document.getElementById("maxCount").innerHTML = max;
+   } 
+   
+}
+
+
+function Move(arrwidth, arrheight, maxsteps, min, max) // User starts the game 
+{
+   var x = 0, y = 0, xcoor, ycoor;
+   
+   //Build of specified length array
+   var f=new Array(arrwidth)
+   for (i=0; i <arrwidth; i++)
+   {   
+     f[i]=new Array(arrheight)
+   }   
+   //Must fill array with 0's to perform properly
+   for (i=0; i<arrwidth; i++)
+   {
+     for (j=0; j<arrheight; j++)
+     {
+       f[i][j]=0;
+     }
+   }
+   
+   for (var i = 1; i <= maxsteps; i++) 
+   {
+     //get random number between 1 and 4
+     var onemove = Math.floor((Math.random() * 4) + 1);
+     //this section reads the random number and generates which direction to move
+     //it will not allow the position to exceed the array boundaries
+	 if(onemove == 1)
+     {
+	   x = x + 1;
+       if(x == arrwidth)
+       {
+         x = arrwidth - 1;
+       } 
+     f[x][y] = f[x][y] + 1;
+     if(x == (arrwidth - 1) && y == (arrheight - 1))
+     {
+        document.getElementById("numMoves").innerHTML = i;
+        break;
+        }
+     }
+     else if(onemove == 2)
+     {
+	   x = x - 1;
+       if(x == -1)
+       {
+          x = x + 1;
+       }
+       f[x][y] = f[x][y] + 1;
+       if(x == (arrwidth - 1) && y == (arrheight - 1))
+       {
+         document.getElementById("numMoves").innerHTML = i;
+         break;
+       }
+     }
+     else if(onemove == 3)
+     {
+	   y = y + 1;
+       if(y == arrheight)
+       {
+          y = arrheight - 1;
+       }
+       f[x][y] = f[x][y] + 1;
+       if(x == (arrwidth - 1) && y == (arrheight - 1))
+       {
+         document.getElementById("numMoves").innerHTML = i;
+         break;
+       }
+    }
+    else
+    {
+	  y = y - 1;
+      if(y == -1)
+      {
+        y = y + 1;
+      }
+      f[x][y] = f[x][y] + 1;
+      if(x == (arrwidth - 1) && y == (arrheight - 1))
+      {
+         document.getElementById("numMoves").innerHTML = i;
+         break;
+      }
+    }
+    if(i == maxsteps)
+    {
+      document.getElementById("numMoves").innerHTML = maxsteps;
+   
+    }
+  }
+
+   
+
+   //find min and max cell visited
+   for(var i = 0; i < f.length; i++)
+   {
+      arr = f[i];
+      if(max < Math.max.apply(Math, arr))
+   {
+        max = Math.max.apply(Math, arr);
+      } 
+      if (min > Math.min.apply(Math, arr))
+   {
+        min = Math.min.apply(Math, arr);
+      }
+   }
+
+   return{min:min, max:max};  
+}   
+
+
+</script>
+<!-- Print all output
+-->
+<P>
+The number of moves it took to end the game:
+<p id="numMoves"> </p>
+
+<P>
+The number of times a cell was visited the least:
+<p id="minCount"> </p>
+
+<P>
+The number of times a cell was visited the most:
+<p id="maxCount"> </p>
+
+</body>
+</html>

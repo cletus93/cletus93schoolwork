@@ -1,0 +1,9 @@
+Randall Rootz
+P1 Table Driven  pictures of table turned in to mygateway
+P3/P4 Global
+
+To run my program you type ./comp filename, where filename is the name of some file you created to be compiled to .asm. The .asm will have the same name as your filename with the .asm extension.
+
+I felt confident that I could do the local option, but with the heavy school load I had I decided to do the global optoin instead just to gain more time to study for finals.
+
+The way I set up my project 4 files was to traverse through the tree previously generated.  The function gencode checks what label the current node has and print code to the output file, depending on the label different code is generated and temporary varialbe in the form T# are created when ever necessary.

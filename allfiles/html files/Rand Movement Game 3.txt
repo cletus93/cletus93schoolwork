@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<!-- Randall Rootz, 31 August 2016
+  Simulate a game of random movement on a grid.  This program will only run
+  until it reaches the top right position or reaches that max number of moves.  The input for
+  this program is to ask the user for the maxsteps, the array width and hieght and how many
+  times they would like to run thier game.  It will run and then display the minimim and the 
+  max of the cell visited the least/most and the number of moves it took to finish the game.
+  My program also displays a histogram of the results of how many steps it took to finish a game, 
+  defaulting to 0 moves if the game never reached the top right of the grid.
+  My partners were Qingyang Hu, Danial Benner, Joshua Veal-Briscoe.
+-->
+<html>
+<head>
+    <!--Load the AJAX API-->
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+
+      // Load the Visualization API and the corechart package.
+      google.charts.load('current', {'packages':['corechart']});
+
+      // Set a callback to run when the Google Visualization API is loaded.
+      google.charts.setOnLoadCallback(drawChart);
+
+      // Callback that creates and populates a data table,
+      // instantiates the bar chart, passes in the data and
+      // draws it.
+      function drawChart(arrgraph) {
+
+        // Create the data table.
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', "Run number");
+        data.addColumn('number', "Steps");
+        data.addRows(arrgraph);
+
+        // Set chart options
+        var options = {'title':"Steps it took to finish a game",
+                       'width':700,
+                       'height':700};
+
+        // Instantiate and draw our chart, passing in some options.
+        var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+function Rerun()
+{
+   var runnum = 0, arrwidth = 0, arrheight = 0, maxsteps = 0, onegame, num, num2;
+   var lose = 0;              //number of games that did not reach the top right
+   var stepstaken;            //steps it took to finish the game
+   var min;                   //max of a run
+   var max;                   //min of a run
+   var minmin = 1000000;      //minimum of all min cell visits of all runs
+   var minmax = 0;            //max of all min cell visits of all runs
+   var minavg = 0;            //average of all min cell visits of all runs
+   var maxmin = 1000000;      //minimum of all max cell visits of all runs 
+   var maxmax = 0;            //max of all max cell visits of all runs
+   var maxavg = 0;            //average of all max cell visits of all runs
+   var stepsmin = 1000000;    //minimum of all steps it took to end the game of all runs
+   var stepsmax = 0;          //max of all steps it took to end the game of all runs
+   var stepsavg = 0;          //average of all steps it took to end the game of all runs
+   
+   while(runnum < 1 || runnum > 200)
+   {
+      runnum = prompt("Please enter how many times you will want to run the game.(1-200)","0");
+   }
+   while(arrwidth < 1 || arrwidth > 500)
+   {
+      arrwidth = prompt("Please enter the width of the grid.(1-500)","0");
+   }
+   while(arrheight < 1 || arrheight > 500)
+   {
+   arrheight = prompt("Please enter the height of the grid.(1-500)","0");
+   }
+   //prompt user for number of steps until end of program
+   while(maxsteps < 1 || maxsteps > 1000000)
+   {
+      maxsteps = prompt("Please enter how many steps you would like to take.(0-1000000)","0");
+   }
+   
+   //array for printing to bar graph
+   var arrgraph = new Array(runnum + 1)
+   for (i = 0; i < runnum + 1; i++)
+   {   
+     arrgraph[i] = new Array(2)
+   }   
+   
+   for(var k = 0; k < runnum; k++)
+   {
+      onegame = Move(arrwidth, arrheight, maxsteps, minmin, minmax, minavg, maxmin, maxmax, maxavg, stepsmin, stepsmax, stepsavg, lose, stepstaken);
+      lose = onegame.lose;
+      stepstaken = onegame.stepstaken;
+      minmin = onegame.minmin;
+      minmax = onegame.minmax;
+      minavg = onegame.minavg;
+      maxmin = onegame.maxmin;
+      maxmax = onegame.maxmax;
+      maxavg = onegame.maxavg;
+      stepsmin = onegame.stepsmin;
+      stepsmax = onegame.stepsmax;
+      stepsavg = onegame.stepsavg;
+   
+      if(stepstaken != 0)
+	  {
+	     var m = k - lose;
+	     var runstring = m.toString();
+		 arrgraph[k][0] = runstring;
+         arrgraph[k][1] = stepstaken;
+      }
+   }
+   
+   minavg = minavg/runnum;
+   maxavg = maxavg/runnum;
+   stepsavg = stepsavg/runnum;
+   
+   arrgraph[runnum][0] = "average";
+   arrgraph[runnum][1] = stepsavg;
+   drawChart(arrgraph);
+   
+   document.getElementById("loseCount").innerHTML = lose;
+   document.getElementById("minminCount").innerHTML = minmin;
+   document.getElementById("minmaxCount").innerHTML = minmax;
+   document.getElementById("minavgCount").innerHTML = minavg;
+   document.getElementById("maxminCount").innerHTML = maxmin;
+   document.getElementById("maxmaxCount").innerHTML = maxmax;
+   document.getElementById("maxavgCount").innerHTML = maxavg;
+   document.getElementById("stepsminCount").innerHTML = stepsmin;
+   document.getElementById("stepsmaxCount").innerHTML = stepsmax;
+   document.getElementById("stepsavgCount").innerHTML = stepsavg;
+}
+
+//function for min of two numbers
+function genmin(num, num2)
+{
+   if(num < num2)
+   {
+      return num;
+   }
+   else 
+   {
+      return num2;
+   }
+}
+
+//function for max of two numbers
+function genmax(num, num2)
+{
+   if(num > num2)
+   {
+      return num;
+   }
+   else
+   {
+      return num2;
+   }
+}
+
+function Move(arrwidth, arrheight, maxsteps, minmin, minmax, minavg, maxmin, maxmax, maxavg, stepsmin, stepsmax, stepsavg, lose, stepstaken) // User starts the game 
+{
+   var x = 0, y = 0;
+   
+   //Build of specified length array
+   var f = new Array(arrwidth)
+   for (i = 0; i < arrwidth; i++)
+   {   
+     f[i] = new Array(arrheight)
+   }   
+   //Must fill array with 0's to perform properly
+   for (i = 0; i < arrwidth; i++)
+   {
+     for (j = 0; j < arrheight; j++)
+     {
+       f[i][j] = 0;
+     }
+   }
+   
+   for (var i = 1; i <= maxsteps; i++) 
+   {
+       //get random number between 1 and 4
+       var onemove = Math.floor((Math.random() * 4) + 1);
+       //this section reads the random number and generates which direction to move
+       //it will not allow the position to exceed the array boundaries
+    if(onemove == 1)
+       {
+       x = x + 1;
+          if(x == arrwidth)
+          {
+             x = arrwidth - 1;
+          } 
+          f[x][y] = f[x][y] + 1;
+          if(x == (arrwidth - 1) && y == (arrheight - 1))
+          {
+             stepstaken = i;
+			 stepsmin = genmin(i, stepsmin);
+             stepsmax = genmax(i, stepsmax);
+             stepsavg = stepsavg + i;
+             break;
+          }
+       }
+       else if(onemove == 2)
+       {
+       x = x - 1;
+          if(x == -1)
+          {
+             x = x + 1;
+          }
+          f[x][y] = f[x][y] + 1;
+          if(x == (arrwidth - 1) && y == (arrheight - 1))
+          {
+             stepstaken = i;
+			 stepsmin = genmin(i, stepsmin);
+             stepsmax = genmax(i, stepsmax);
+             stepsavg = stepsavg + i;
+             break;
+          }
+       }
+       else if(onemove == 3)
+       {
+       y = y + 1;
+          if(y == arrheight)
+          {
+             y = arrheight - 1;
+          }
+          f[x][y] = f[x][y] + 1;
+          if(x == (arrwidth - 1) && y == (arrheight - 1))
+          {
+             stepstaken = i;
+			 stepsmin = genmin(i, stepsmin);
+             stepsmax = genmax(i, stepsmax);
+             stepsavg = stepsavg + i;
+             break;
+          }
+       }
+       else
+       {
+       y = y - 1;
+          if(y == -1)
+          {
+             y = y + 1;
+          }
+          f[x][y] = f[x][y] + 1;
+          if(x == (arrwidth - 1) && y == (arrheight - 1))
+          {
+             stepstaken = i;
+			 stepsmin = genmin(i, stepsmin);
+             stepsmax = genmax(i, stepsmax);
+             stepsavg = stepsavg + i;
+    break;
+          }
+       }
+       if(i == maxsteps && x != (arrwidth - 1) && y != (arrheight - 1))
+       {
+          lose++;
+          stepstaken = 0;
+		  stepsmin = genmin(i, stepsmin);
+          stepsmax = genmax(i, stepsmax);
+          stepsavg = stepsavg + i;
+       }
+   }
+   
+   min = maxsteps;
+   max = 0;
+   
+   //find min and max cell visited
+   for(var i = 0; i < f.length; i++)
+   {
+      arr = f[i];
+      if(max < Math.max.apply(Math, arr))
+   {
+        max = Math.max.apply(Math, arr);
+      } 
+      if (min > Math.min.apply(Math, arr))
+   {
+        min = Math.min.apply(Math, arr);
+      }
+   }
+   
+   minmin = genmin(min, minmin);
+   minmax = genmax(min, minmax);
+   minavg = minavg + min;
+   maxmin = genmin(max, maxmin);
+   maxmax = genmax(max, maxmax);
+   maxavg = maxavg + max;
+   
+   return {minmin:minmin, minmax:minmax, minavg:minavg, maxmin:maxmin, maxmax:maxmax, maxavg:maxavg, stepsmin:stepsmin, stepsmax:stepsmax, stepsavg:stepsavg, lose:lose, stepstaken:stepstaken};
+}   
+    </script>
+  </head>
+<body>
+<!--Div that will hold the pie chart-->
+<div id="chart_div"></div>
+	
+<button onclick="Rerun()">Click here to start the game.</button>
+
+<h1>Random Movement</h1>
+<!-- Print all output
+-->
+<P>
+The number of games that did not reach the top right:
+<p id = "loseCount"> </p>
+
+<P>
+The minimum of the cells visited least:
+<p id = "minminCount"> </p>
+
+<P>
+The max of the cells visited least:
+<p id = "minmaxCount"> </p>
+
+<P>
+The average of the cells visited least:
+<p id = "minavgCount"> </p>
+
+<P>
+The mininum of the cells visited most:
+<p id = "maxminCount"> </p>
+
+<P>
+The max of the cells visited most:
+<p id = "maxmaxCount"> </p>
+
+<P>
+The average of the cells visited most:
+<p id = "maxavgCount"> </p>
+
+<P>
+The min of the steps it took to end the game:
+<p id = "stepsminCount"> </p>
+
+<P>
+The max of the steps it took to end the game:
+<p id = "stepsmaxCount"> </p>
+
+<P>
+The average of the steps it took to end the game:
+<p id = "stepsavgCount"> </p>
+
+</body>
+</html>

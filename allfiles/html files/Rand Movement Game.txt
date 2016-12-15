@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<!-- Randall Rootz, 23 August 2016
+     Simulate a game of random movement in a 10 by 10 grid.  This program will only run
+	 until it reaches the top right position or does one million moves.  The only input for 
+	 this program is the click of the run button, and it will display
+     how many moves it took to reach the end and the square that was visited the least and most.
+-->
+<html>
+<body>
+
+<button onclick="Move()">Click here to start the game.</button>
+
+<h1>Random Movement Game</h1>
+
+<script>
+function Move() // User starts the game 
+{
+   var x = 0;
+   var y = 0;
+	
+   //Build 10 x 10 array
+   var f = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]];
+   
+   for (var i = 1; i <= 1000000; i++) 
+   {
+     var loopend = "You did not reach 1000000 moves"
+  //get random number between 1 and 4
+  var onemove = Math.floor((Math.random() * 4) + 1);
+  //this section reads the random number and generates which direction to move
+  //it will not allow the position to exceed the array boundaries
+  if(onemove == 1)
+  {
+	x = x + 1;
+	if(x == 10)
+	{
+	   x = 9;
+	}
+	f[x][y] = f[x][y] + 1;
+	if(x == 9 && y == 9)
+	{
+        document.getElementById("topRight").innerHTML = "You have made it to the top right of the grid";
+	    document.getElementById("numMoves").innerHTML = i;
+	    break;
+    }
+  }
+  else if(onemove == 2)
+  {
+     x = x - 1;
+	 if(x == -1)
+  	 {
+	   x = 0;
+ 	 }
+	 f[x][y] = f[x][y] + 1;
+	 if(x == 9 && y == 9)
+     {
+       document.getElementById("topRight").innerHTML = "You have made it to the top right of the grid";
+	   document.getElementById("numMoves").innerHTML = i;
+	   break;
+     }
+  }
+  else if(onemove == 3)
+  {
+     y = y + 1;
+ 	 if(y == 10)
+ 	 {
+	    y = 9;
+	 }
+	 f[x][y] = f[x][y] + 1;
+	 if(x == 9 && y == 9)
+     {
+       document.getElementById("topRight").innerHTML = "You have made it to the top right of the grid";
+	   document.getElementById("numMoves").innerHTML = i;
+	   break;
+     }
+  }
+  else
+  {
+     y = y - 1;
+	 if(y == -1)
+	 {
+	    y = 0;
+	 }
+	 f[x][y] = f[x][y] + 1;
+	 if(x == 9 && y == 9)
+     {
+       document.getElementById("topRight").innerHTML = "You have made it to the top right of the grid";
+	   document.getElementById("numMoves").innerHTML = i;
+	   break;
+	   }
+  }
+  if(i == 1000000)
+  {
+    loopend = "You reached 1000000 moves";
+  }
+}
+   
+   var max=0;
+   var min=1000000;
+
+   //find min and max cell visited
+   for(var i = 0; i < f.length; i++)
+   {
+      arr = f[i];
+      if(max < Math.max.apply(Math, arr))
+	  {
+        max = Math.max.apply(Math, arr);
+      } 
+      if (min > Math.min.apply(Math, arr))
+	  {
+        min = Math.min.apply(Math, arr);
+      }
+   }
+  
+   document.getElementById("Reach").innerHTML = loopend;
+   document.getElementById("minCount").innerHTML = min;
+   document.getElementById("maxCount").innerHTML = max;
+}   
+   
+</script>
+<!-- Print all output
+-->
+<P>
+<p id="Reach"> </p>
+
+<P>
+<p id="topRight"> </p>
+ 
+<P>
+The number of moves it took to end the game:
+<p id="numMoves"> </p>
+
+<P>
+The number of times a cell was visited the least:
+<p id="minCount"> </p>
+
+<P>
+The number of times a cell was visited the most:
+<p id="maxCount"> </p>
+
+</body>
+</html>

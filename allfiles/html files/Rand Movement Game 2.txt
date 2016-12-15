@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<!-- Randall Rootz, 31 August 2016
+  Simulate a game of random movement in a 10 by 10 grid.  This program will only run
+  until it reaches the top right position or does one million moves.  The only input for 
+  this program is the click of the run button, and it will display
+  how many moves it took to reach the end and the square that was visited the least and most.
+  This program tracks the progress of the movement with a visual aspect and displays the last
+  position of the function when it ends. My partner was Alex Wacker.
+-->
+<html>
+<body>
+
+<button onclick="Move()">Click here to start the game.</button>
+
+<h1>Random Movement Game</h1>
+
+<canvas id="canvas" width = "120px" height = "120px" style = "background: #fff; magrin: 20px;"></canvas>
+
+<script>
+//Thank you to Alex Wacker for his help understanding and implementing the canvas function to make the visual possible.
+//makes canvas with a grid layout
+var bw = 100;
+var bh = 100;
+var p = 10;
+var canvas = document.getElementById("canvas");
+var context = canvas.getContext("2d");
+function drawBoard(){
+  for (var x = 0; x <= bw; x += 10) 
+  {
+    context.moveTo(0.5 + x, 0);
+    context.lineTo(0.5 + x, bh);
+  }
+  for (var x = 0; x <= bh; x += 10) 
+  {
+    context.moveTo(0, 0.5 + x);
+    context.lineTo(bw, 0.5 + x);
+  }
+  context.strokeStyle = "black";
+  context.stroke();
+}
+
+//call function to build the board
+drawBoard();
+
+
+//function for deleting old squares and printing new ones for current position
+function spotMaker(x, y, onemove) {
+	if(onemove == 1)
+    {
+	  xcoor = ((x - 1) * 10) + 1;
+	  ycoor = 99 - (y * 10);
+	  ctx.clearRect(xcoor, ycoor, 8, -8);
+	  xcoor = (x * 10) + 1;
+      ycoor = 99 - (y * 10);
+	  ctx.fillStyle = "#FF0000";
+	  ctx.fillRect(xcoor, ycoor, 8, -8);
+	   
+	}
+	else if(onemove == 2)
+    {
+	  xcoor = ((x + 1) * 10) + 1;
+	  ycoor = 99 - (y * 10);
+	  ctx.clearRect(xcoor, ycoor, 8, -8);
+      xcoor = (x * 10) + 1;
+      ycoor = 99 - (y * 10);
+      ctx.fillStyle = "#FF0000";
+      ctx.fillRect(xcoor, ycoor, 8, -8);
+	}
+	else if(onemove == 3)
+    {
+	  xcoor = (x * 10) + 1;
+	  ycoor = 99 - ((y - 1) * 10);
+	  ctx.clearRect(xcoor, ycoor, 8, -8);
+	  xcoor = (x * 10) + 1;
+      ycoor = 99 - (y * 10);
+      ctx.fillStyle = "#FF0000";
+      ctx.fillRect(xcoor, ycoor, 8, -8);
+	}
+	else
+	{
+	  xcoor = (x * 10) + 1;
+	  ycoor = 99 - ((y + 1) * 10);
+	  ctx.clearRect(xcoor, ycoor, 8, -8);
+	  xcoor = (x * 10) + 1;
+      ycoor = 99 - (y * 10);
+      ctx.fillStyle = "#FF0000";
+      ctx.fillRect(xcoor, ycoor, 8, -8);
+	}
+}
+
+function Move() // User starts the game 
+{
+   //need xcoor and ycoor for grid movement since it is on a scale of 10 not 1 like function
+   var x = 0, y = 0, maxsteps, arrwidth = 10, arrheight = 10, xcoor, ycoor;
+   
+   //prompt user for number of steps until end of program
+   maxsteps = prompt("Please enter how many steps you would like to take.","0");
+
+   //Build of specified length array
+   var f=new Array(arrwidth)
+   for (i=0; i <arrwidth; i++)
+   {   
+     f[i]=new Array(arrheight)
+   }   
+   //Must fill array with 0's to perform properly
+   for (i=0; i<arrwidth; i++)
+   {
+     for (j=0; j<arrheight; j++)
+     {
+       f[i][j]=0;
+     }
+   }
+   //style for red will be used many times later on
+   ctx.fillStyle = "#FF0000";
+   ctx.fillRect(1, 99, 8, -8);
+   for (var i = 1; i <= maxsteps; i++) 
+   {
+     var loopend = "You did not reach the max number of moves"
+     //get random number between 1 and 4
+     var onemove = Math.floor((Math.random() * 4) + 1);
+     //this section reads the random number and generates which direction to move
+     //it will not allow the position to exceed the array boundaries
+	 if(onemove == 1)
+     {
+	   x = x + 1;
+       if(x == arrwidth)
+       {
+         x = arrwidth - 1;
+       } 
+     f[x][y] = f[x][y] + 1;
+	 //Thank you to Alex Wacker for showing me how to pass variables to a function called within the setTimeout call,
+	 //I did not know that was possible.
+	 setTimeout(spotMaker, 200 * i, x, y, onemove);
+     if(x == (arrwidth - 1) && y == (arrheight - 1))
+     {
+        document.getElementById("topRight").innerHTML = "You have made it to the top right of the grid";
+        document.getElementById("numMoves").innerHTML = i;
+        break;
+        }
+     }
+     else if(onemove == 2)
+     {
+	   x = x - 1;
+       if(x == -1)
+       {
+          x = x + 1;
+       }
+       f[x][y] = f[x][y] + 1;
+	   setTimeout(spotMaker, 200 * i, x, y, onemove);
+       if(x == (arrwidth - 1) && y == (arrheight - 1))
+       {
+         document.getElementById("topRight").innerHTML = "You have made it to the top right of the grid";
+         document.getElementById("numMoves").innerHTML = i;
+         break;
+       }
+     }
+     else if(onemove == 3)
+     {
+	   y = y + 1;
+       if(y == arrheight)
+       {
+          y = arrheight - 1;
+       }
+       f[x][y] = f[x][y] + 1;
+       setTimeout(spotMaker, 200 * i, x, y, onemove);
+       if(x == (arrwidth - 1) && y == (arrheight - 1))
+       {
+         document.getElementById("topRight").innerHTML = "You have made it to the top right of the grid";
+         document.getElementById("numMoves").innerHTML = i;
+         break;
+       }
+    }
+    else
+    {
+	  y = y - 1;
+      if(y == -1)
+      {
+        y = y + 1;
+      }
+      f[x][y] = f[x][y] + 1;
+     setTimeout(spotMaker, 200 * i, x, y, onemove);
+      if(x == (arrwidth - 1) && y == (arrheight - 1))
+      {
+         document.getElementById("topRight").innerHTML = "You have made it to the top right of the grid";
+         document.getElementById("numMoves").innerHTML = i;
+         break;
+      }
+    }
+    if(i == maxsteps)
+    {
+      loopend = "You reached the max number of moves";
+      document.getElementById("numMoves").innerHTML = maxsteps;
+   
+    }
+  }
+   //sleep();
+   var max=0;
+   var min=maxsteps;
+
+   //find min and max cell visited
+   for(var i = 0; i < f.length; i++)
+   {
+      arr = f[i];
+      if(max < Math.max.apply(Math, arr))
+   {
+        max = Math.max.apply(Math, arr);
+      } 
+      if (min > Math.min.apply(Math, arr))
+   {
+        min = Math.min.apply(Math, arr);
+      }
+   }
+  
+   document.getElementById("Reach").innerHTML = loopend;
+   document.getElementById("minCount").innerHTML = min;
+   document.getElementById("maxCount").innerHTML = max;
+}   
+// Draw a red rectangle inside the canvas already established above.
+
+var c = document.getElementById("canvas");
+
+var ctx = c.getContext("2d");
+
+
+</script>
+<!-- Print all output
+-->
+<P>
+<p id="Reach"> </p>
+
+<P>
+<p id="topRight"> </p>
+ 
+<P>
+The number of moves it took to end the game:
+<p id="numMoves"> </p>
+
+<P>
+The number of times a cell was visited the least:
+<p id="minCount"> </p>
+
+<P>
+The number of times a cell was visited the most:
+<p id="maxCount"> </p>
+
+</body>
+</html>

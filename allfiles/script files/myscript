@@ -1,0 +1,33 @@
+//This program checkes what type of files exist in a directory and prints their name, type, and length to stdout, if the file is a symbolic link it lists what file it is linked to.
+#! /bin/bash
+
+if [ -z "$1" ]; then
+k=`pwd`
+else
+k=$1/*
+fi
+for i in $k; do
+	function filecheck {
+		FILE=$i
+		if [ -L "$FILE" ]; then
+			echo "Filename: $FILE, symbolic link, linked-to file: `ls -l $FILE|cut -d'>' -f2`"
+		elif [ -f "$FILE" ]; then
+			echo "Filename: $FILE, Filesize: `wc -c $FILE|cut -c1-8`, Type `file $FILE|cut -d':' -f2`"
+
+		elif [ -d "$FILE" ]; then
+			for m in $FILE/*; do
+			i=$m	
+			filecheck $i
+			done 
+
+		elif [ ! -f "$FILE" ]; then
+			echo "Filename: $FILE, does not exist"
+
+		else
+			echo "Filename: $FILE, unknown"
+
+		fi
+	}
+	filecheck $i
+done
+
